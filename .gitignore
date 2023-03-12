@@ -1,0 +1,13 @@
+# VSCODE
+.vscode
+
+# dependencies
+node_modules
+
+# build
+cache
+artifacts
+deployments
+
+# private
+.env
