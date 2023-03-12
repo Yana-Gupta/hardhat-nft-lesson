@@ -50,6 +50,11 @@ const { developmentChains, MINT_FEE } = require("../../helper-hardhat-config")
             "RandomIpfsNft__NeedMoreETHSent"
           )
         })
+        it("emits event when its successful", async function () {
+          await expect(
+            randomIpfsNft.requestNft({ value: fee.toString() })
+          ).to.emit(randomIpfsNft, "NftRequested")
+        })
       })
 
       describe("getBreedFromModdedRng", function () {
