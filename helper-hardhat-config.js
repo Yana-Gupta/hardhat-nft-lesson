@@ -22,6 +22,7 @@ const networkConfig = {
   },
 }
 
+const MINT_FEE = ethers.utils.parseEther("0.01")
 const developmentChains = ["hardhat", "localhost"]
 
-module.exports = { networkConfig, developmentChains }
+module.exports = { networkConfig, developmentChains, MINT_FEE }

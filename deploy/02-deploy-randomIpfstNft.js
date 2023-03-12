@@ -1,5 +1,9 @@
 const { network, ethers } = require("hardhat")
-const { developmentChains, networkConfig } = require("../helper-hardhat-config")
+const {
+  developmentChains,
+  networkConfig,
+  MINT_FEE,
+} = require("../helper-hardhat-config")
 const { verify } = require("../utils/verify")
 const {
   storeImages,
@@ -18,8 +22,6 @@ const metaDataTemplate = {
     },
   ],
 }
-
-const MINT_FEE = ethers.utils.parseEther("0.01")
 const IMAGE_LOCATION = "./images/randomNft"
 
 module.exports = async function ({ getNamedAccounts, deployments }) {
