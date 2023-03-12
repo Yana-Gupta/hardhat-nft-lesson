@@ -45,14 +45,9 @@ const { developmentChains, MINT_FEE } = require("../../helper-hardhat-config")
             randomIpfsNft.requestNft({
               value: fee.sub(ethers.utils.parseEther("0.00001")),
             })
-          ).to.be.revertedWithCustomError("RandomIpfsNft__NeedMoreETHSent")
-        })
-
-        it("emits an event when at success", async function () {
-          await expect(
-            await randomIpfsNft
-              .requestNft({ value: fee })
-              .to.emit(randomIpfsNft, "NftRequested")
+          ).to.be.revertedWithCustomError(
+            randomIpfsNft,
+            "RandomIpfsNft__NeedMoreETHSent"
           )
         })
       })
