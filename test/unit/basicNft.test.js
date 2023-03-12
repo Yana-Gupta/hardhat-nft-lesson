@@ -48,5 +48,3 @@ const { developmentChains } = require("../../helper-hardhat-config")
         })
       })
     })
-
-module.exports.tags = ["all", "basicnft"]

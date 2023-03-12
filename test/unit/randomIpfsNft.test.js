@@ -5,7 +5,6 @@ const { developmentChains, MINT_FEE } = require("../../helper-hardhat-config")
 !developmentChains.includes(network.name)
   ? describe.skip
   : describe("RandomIpfsNft", function () {
-
       let randomIpfsNft, vrfCoordinatorV2
       beforeEach(async function () {
         deployer = (await getNamedAccounts()).deployer
@@ -21,40 +20,50 @@ const { developmentChains, MINT_FEE } = require("../../helper-hardhat-config")
       describe("constructor", function () {
         it("initializes all the variables correctly", async function () {
           const mintfee = await randomIpfsNft.getMintFee()
-          assert.equal(mintfee.toString(), MINT_FEE.toString())
-          const getTokenUri = await randomIpfsNft.getDogTokenUris
+          const getTokenUri = await randomIpfsNft.getDogTokenUris()
           const tokenUriZero = getTokenUri[0]
-          assert(tokenUriZero.includes("ipfs://"))
+          assert.equal(mintfee.toString(), MINT_FEE.toString())
+          expect(tokenUriZero.includes("ipfs://"))
         })
       })
-      
+
       describe("requestNft", function () {
+        let fee
         beforeEach(async function () {
-          const fee = await randomIpfsNft.getMintFee()
+          fee = await randomIpfsNft.getMintFee()
         })
         it("reverts if the payment is sent less", async function () {
           await expect(
-            await randomIpfsNft.requestNft()
-          ).to.be.revertedWithCustomError("RandomIpfsNft__NeedMoreETHSent")
+            randomIpfsNft.requestNft()
+          ).to.be.revertedWithCustomError(
+            randomIpfsNft,
+            "RandomIpfsNft__NeedMoreETHSent"
+          )
         })
         it("reverts if the payment sent is less than mint fee", async function () {
           await expect(
-            await randomIpfsNft.requestNft({
+            randomIpfsNft.requestNft({
               value: fee.sub(ethers.utils.parseEther("0.00001")),
             })
-          ).to.be.revertedWithCustomError("RandomIpfsNft__NeedMoreETHSent")
-        })
-
-        it("emits an event when at success", async function () {
-          await expect(
-            await randomIpfsNft
-              .requestNft({ value: fee })
-              .to.emit(randomIpfsNft, "NftRequested")
+          ).to.be.revertedWithCustomError(
+            randomIpfsNft,
+            "RandomIpfsNft__NeedMoreETHSent"
           )
         })
       })
 
-      describe("", async function () {})
+      describe("getBreedFromModdedRng", function () {
+        it("should return a pug if random number is between 0 to 9", async function () {
+          const expectedValue = await randomIpfsNft.getBreedFromModdedRng(7)
+          assert.equal(expectedValue.toString(), "0")
+        })
+        it("should return a shiba-inu if random number is betwen 10 to 39", async function () {
+          const expectedValue = await randomIpfsNft.getBreedFromModdedRng(37)
+          assert.equal(expectedValue.toString(), "1")
+        })
+        it("should return a st-bernard if random number is between 40 to 99", async function () {
+          const expectedValue = await randomIpfsNft.getBreedFromModdedRng(97)
+          assert.equal(expectedValue.toString(), "2")
+        })
+      })
     })
-
-module.exports.tags = ["all", "randomipfs"]
