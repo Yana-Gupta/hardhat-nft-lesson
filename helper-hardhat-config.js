@@ -16,8 +16,7 @@ const networkConfig = {
     enterenceFee: ethers.utils.parseEther("1.0"),
     gasLane:
       "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15",
-    subscriptionId: "0",
-    callbackGasLimit: "50000",
+    callbackGasLimit: "5000",
     interval: "30",
   },
 }
