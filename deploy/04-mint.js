@@ -23,20 +23,24 @@ module.exports = async ({ getNamedAccounts }) => {
   // Random IPFS NFT
   const randomIpfsNft = await ethers.getContract("RandomIpfsNft", deployer)
   const mintFee = await randomIpfsNft.getMintFee()
+  const randomIpfsNftMintTx = await randomIpfsNft.requestNft({
+    value: mintFee.toString(),
+  })
+  const randomIpfsNftMintTxReceipt = await randomIpfsNftMintTx.wait(1)
 
   // Need to listen for response
   await new Promise(async (resolve, reject) => {
-    setTimeout(resolve, 300000)
-    randomIpfsNft.once("NftMinted", async function () {
+    setTimeout(() => reject("Timeout: 'NFTMinted' event did not fire"), 300000) // 5 minute timeout time
+    // setup listener for our event
+    randomIpfsNft.once("NftMinted", async () => {
+      console.log(
+        `Random IPFS NFT index 0 tokenURI: ${await randomIpfsNft.tokenURI(0)}`
+      )
       resolve()
     })
-    const randomIpfsNftMintTx = await randomIpfsNft.requestNft({
-      value: mintFee.toString(),
-    })
-    const randomIpfsNftMintTxRecipt = await randomIpfsNftMintTx.wait(1)
-    if (developmentChains.includes(network.name)) {
+    if (chainId == 31337) {
       const requestId =
-        randomIpfsNftMintTxRecipt.events[1].args.requestId.toString()
+        randomIpfsNftMintTxReceipt.events[1].args.requestId.toString()
       const vrfCoordinatorV2Mock = await ethers.getContract(
         "VRFCoordinatorV2Mock",
         deployer
@@ -47,10 +51,6 @@ module.exports = async ({ getNamedAccounts }) => {
       )
     }
   })
-
-  console.log(
-    `Random IPFS NT index 0 tokenURI, ${await randomIpfsNft.tokenURI(0)}`
-  )
 }
 
 module.exports.tags = ["all", "mint"]

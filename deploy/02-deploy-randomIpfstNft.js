@@ -10,6 +10,7 @@ const {
   storeTokenURIMetadata,
 } = require("../utils/uploadToPinata")
 require("dotenv").config()
+const FUND_AMOUNT = "1000000000000000000000"
 
 const metaDataTemplate = {
   name: "",
@@ -42,6 +43,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
     const txResponse = await vrfCoordinatorV2Mock.createSubscription()
     const txRecipt = await txResponse.wait()
     subId = txRecipt.events[0].args.subId
+    await vrfCoordinatorV2Mock.fundSubscription(subId, FUND_AMOUNT)
   } else {
     vrfCoordinatorV2Address = networkConfig[chainId].vrfCoordinatorV2
     subId = networkConfig[chainId].subscriptionId
