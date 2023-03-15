@@ -5,6 +5,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "base64-sol/base64.sol";
 
+// error
+
+error ERC721Metadata__URI_QueryFor_NonExistentToken();
+
 contract DynamicSvgNft is ERC721 {
   uint256 private s_tokenCounter;
   string private i_lowImageURI;
@@ -43,20 +47,22 @@ contract DynamicSvgNft is ERC721 {
 
   function mintNft(int256 highValue) public {
     s_tokenIdToHighValue[s_tokenCounter] = highValue;
-    s_tokenCounter++;
     _safeMint(msg.sender, s_tokenCounter);
+    s_tokenCounter++;
     emit CreatedNFT(s_tokenCounter, highValue);
   }
 
   function tokenURI(
     uint256 tokenId
   ) public view override returns (string memory) {
-    require(_exists(tokenId), "URI Query for non existant token.");
+    if (!_exists(tokenId)) {
+      revert ERC721Metadata__URI_QueryFor_NonExistentToken();
+    }
 
     // Get the price from AggregatorV3
     (, int256 price, , , ) = i_priceFeed.latestRoundData();
     string memory imageURI = i_lowImageURI;
-    if (price / 10 ** 8 >= s_tokenIdToHighValue[tokenId]) {
+    if (price >= s_tokenIdToHighValue[tokenId]) {
       imageURI = i_highImageURI;
     }
     return
@@ -66,12 +72,12 @@ contract DynamicSvgNft is ERC721 {
           Base64.encode(
             bytes(
               abi.encodePacked(
-                '{ "name": "',
-                name(),
-                '", "description": "An NFT that changes its face as the price of ETH",',
-                '"attributes": [{"trait_types":"coolness, "value":100}], "image": ',
+                '{"name":"',
+                name(), 
+                '", "description":"An NFT that changes based on the Chainlink Feed", ',
+                '"attributes": [{"trait_type": "coolness", "value": 100}], "image":"',
                 imageURI,
-                '" }'
+                '"}'
               )
             )
           )
