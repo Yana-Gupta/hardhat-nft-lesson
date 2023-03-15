@@ -19,11 +19,9 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       log: true,
       args: args,
     })
-
     log("VRFCoordinatorV2 Mocks Deployed!")
     log("-------------------------------------------------")
 
-    
     log("AggregatorV3Mock deploying......")
     await deploy("MockV3Aggregator", {
       from: deployer,
