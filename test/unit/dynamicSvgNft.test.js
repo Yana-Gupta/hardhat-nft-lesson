@@ -9,14 +9,14 @@ const { developmentChains } = require("../../helper-hardhat-config")
       beforeEach(async function () {
         deployer = (await getNamedAccounts()).deployer
         await deployments.fixture(["all"])
-        dynamicSvgNft = await ethers.getContractAt("DynamicSvgNft", deployer)
+        dynamicSvgNft = await ethers.getContract("DynamicSvgNft", deployer)
       })
       describe("constructor", function () {
         it("initializes the nft correctly...", async function () {
-          // tokenCounter = await dynamicSvgNft.getTokenCounter()
+          tokenCounter = await dynamicSvgNft.getTokenCounter()
           name = await dynamicSvgNft.name()
           symbol = await dynamicSvgNft.symbol()
-          //assert.equal(tokenCounter.toString(), "0")
+          assert.equal(tokenCounter.toString(), "0")
           assert.equal(name.toString(), "Dynamic SVG NFT")
           assert.equal(symbol.toString(), "DSN")
         })
